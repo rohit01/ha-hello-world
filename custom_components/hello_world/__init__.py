@@ -1,15 +1,21 @@
 import logging
+from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
-
 DOMAIN = "hello_world"
 
-async def async_setup(hass, config):
-    """Set up the Hello World integration."""
-    _LOGGER.info("Hello World integration has been loaded!")
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Set up Hello World from a config entry."""
+    username = entry.data.get("username")
     
-    # Create a simple state in the Developer Tools
-    hass.states.async_set("hello_world.status", "Active")
+    _LOGGER.info(f"Hello {username}! Integration loaded via UI.")
+    
+    hass.states.async_set(f"{DOMAIN}.status", f"Hello {username}")
     
     return True
 
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Unload a config entry."""
+    hass.states.async_remove(f"{DOMAIN}.status")
+    return True
